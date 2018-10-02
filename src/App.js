@@ -25,8 +25,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const bind = this;
-
     let utc = moment().format("MMM Do YY");
 
     if (utc !== this.state.today) {
@@ -68,6 +66,21 @@ class App extends Component {
       }
     });
   }
+
+  getDataFromDb = (key, stateField, stateData) => {
+    localforage
+      .getItem(key)
+      .then(data => {
+        if (data !== null) {
+          stateData = data;
+        }
+      })
+      .then(() => {
+        this.setState({
+          [stateField]: stateData
+        });
+      });
+  };
 
   toDoItems = [];
   completedItems = [];

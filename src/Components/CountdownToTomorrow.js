@@ -1,6 +1,5 @@
 import React from "react";
 import moment from "moment";
-import CountdownTimer from "react-awesome-countdowntimer";
 
 const timeUntilTomorrow = () => {
   let tomorrow = moment()
