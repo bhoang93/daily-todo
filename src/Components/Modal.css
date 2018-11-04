@@ -1,0 +1,36 @@
+#modal-root {
+  position: relative;
+}
+
+.modalBg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+}
+
+.modalBox {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  height: 150px;
+  width: 30%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 3px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.buttons {
+  width: 20%;
+  display: flex;
+  justify-content: space-evenly;
+}

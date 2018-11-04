@@ -1,6 +1,7 @@
 .App {
   text-align: center;
   font-size: 1.5em;
+  position: relative;
 }
 
 .App-header {
@@ -21,4 +22,14 @@
   padding-bottom: 5px;
   display: flex;
   justify-content: center;
+}
+
+.tracker {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 10px 20px;
+  color: white;
+  border-radius: 2px;
 }

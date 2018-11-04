@@ -7,7 +7,11 @@ const ProgressBar = ({ percentDone }) => {
     <div>
       <div className="text-center">
         {percentDone + "%"}
-        {percentDone === "100" && <span>🏆</span>}
+        {percentDone === "100" && (
+          <span role="img" aria-label="trophy">
+            🏆
+          </span>
+        )}
       </div>
       <Progress style={{ width: "60%", margin: "auto" }} value={percentDone} />
     </div>

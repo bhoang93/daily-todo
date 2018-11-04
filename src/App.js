@@ -6,7 +6,6 @@ import moment from "moment";
 
 import ToDoList from "./Components/ToDoList";
 import ProgressBar from "./Components/ProgressBar";
-import CountdownToTomorrow from "./Components/CountdownToTomorrow";
 
 const localforage = require("localforage");
 
@@ -19,20 +18,12 @@ class App extends Component {
     this.state = {
       toDoItems: [],
       completedItems: [],
-      today: "",
+      totalDays: 1,
       percentDone: 0
     };
   }
 
   componentDidMount() {
-    let utc = moment().format("MMM Do YY");
-
-    if (utc !== this.state.today) {
-      this.toDoItems = this.toDoItems.concat(this.completedItems);
-      this.completedItems = [];
-      localforage.setItem("today", utc);
-    }
-
     localforage
       .getItem("toDoItems")
       .then(list => {
@@ -60,30 +51,34 @@ class App extends Component {
       })
       .then(() => this.progressUpdate());
 
-    localforage.getItem("today").then(day => {
-      if (day !== null) {
-        this.setState({ today: day });
-      }
-    });
-  }
-
-  getDataFromDb = (key, stateField, stateData) => {
-    localforage
-      .getItem(key)
-      .then(data => {
-        if (data !== null) {
-          stateData = data;
-        }
-      })
-      .then(() => {
-        this.setState({
-          [stateField]: stateData
-        });
+    let day = moment().format("dddd");
+    let oldDay;
+    localforage.getItem("today").then(day => (oldDay = day));
+    if (day !== oldDay) {
+      localforage.getItem("count").then(count => {
+        count === null
+          ? localforage.setItem("count", 1)
+          : localforage.setItem("count", count + 1);
+        this.setState({ count: count + 1 });
       });
-  };
+
+      this.toDoItems = this.toDoItems.concat(this.completedItems);
+      this.completedItems = [];
+      localforage.setItem("today", day).then(() =>
+        this.setState(
+          {
+            toDoItems: this.toDoItems,
+            completedItems: this.completedItems
+          },
+          () => this.progressUpdate()
+        )
+      );
+    }
+  }
 
   toDoItems = [];
   completedItems = [];
+  today = "";
 
   updateArrays = () => {
     this.setState(
@@ -117,29 +112,29 @@ class App extends Component {
   addNewTask = event => {
     if (event.key === "Enter" || event === "click") {
       let input = this.inputField.current.value;
-      if (input !== "") {
-        this.toDoItems.push(input);
+      if (input !== "" && this.toDoItems.indexOf(input) === -1) {
+        this.toDoItems = [...this.toDoItems, input];
         this.updateArrays();
         this.inputField.current.value = "";
       }
     }
   };
 
-  removeTask = key => {
-    let index = this.toDoItems.indexOf(key);
-    this.toDoItems.splice(index, 1);
+  removeTask = removedTask => {
+    let newArray = this.toDoItems.filter(task => task !== removedTask);
+    this.toDoItems = newArray;
     this.updateArrays();
   };
 
   completeTask = item => {
-    this.completedItems.push(item);
+    this.completedItems = [...this.completedItems, item];
     this.removeTask(item);
   };
 
   addTaskBackToList = item => {
     this.toDoItems.push(item);
-    let index = this.completedItems.indexOf(item);
-    this.completedItems.splice(item, 1);
+    let newArray = this.toDoItems.filter(task => task !== item);
+    this.completedItems = newArray;
     this.updateArrays();
   };
 
@@ -148,7 +143,9 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <h1 className="App-title">
-            <span>📋</span>Daily To Do List
+            <span role="img" aria-label="clipboard">
+              📋
+            </span>Daily To Do List
           </h1>
         </header>
         <ProgressBar percentDone={this.state.percentDone} />
@@ -169,6 +166,7 @@ class App extends Component {
             Submit
           </Button>
         </div>
+
         <ToDoList
           completeTask={this.completeTask}
           removeTask={this.removeTask}
@@ -177,7 +175,7 @@ class App extends Component {
           addTaskBackToList={this.addTaskBackToList}
         />
 
-        <CountdownToTomorrow percentDone={this.state.percentDone} />
+        <div className="tracker">{this.state.totalDays} Day(s) Used</div>
       </div>
     );
   }
