@@ -3,6 +3,7 @@ import React from "react";
 import { Button, ListGroup, ListGroupItem } from "reactstrap";
 import { Scrollbars } from "react-custom-scrollbars";
 import Modal from "./Modal";
+import "./ToDoList.css";
 
 class ToDoList extends React.Component {
   constructor() {
@@ -85,12 +86,13 @@ class ToDoList extends React.Component {
               {completedItems.map(item => {
                 return (
                   <ListGroupItem
-                    key={item}
                     style={{
                       backgroundColor: "#28a745",
                       color: "white",
                       display: "flex"
                     }}
+                    key={item}
+                    className="completedItem"
                   >
                     <span className="col">{item} ✓</span>
                     <Button

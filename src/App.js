@@ -52,28 +52,28 @@ class App extends Component {
       .then(() => this.progressUpdate());
 
     let day = moment().format("dddd");
-    let oldDay;
-    localforage.getItem("today").then(day => (oldDay = day));
-    if (day !== oldDay) {
-      localforage.getItem("count").then(count => {
-        count === null
-          ? localforage.setItem("count", 1)
-          : localforage.setItem("count", count + 1);
-        this.setState({ count: count + 1 });
+    localforage
+      .getItem("today")
+      .then(date => {
+        if (date !== null) {
+          if (date !== day) {
+            localforage.setItem("today", day);
+            localforage.getItem("count").then(value => {
+              if (value !== null) {
+                localforage.setItem("count", value + 1);
+              }
+            });
+          }
+        } else {
+          localforage.setItem("today", day);
+          localforage.setItem("count", 1);
+        }
+      })
+      .then(() => {
+        localforage
+          .getItem("count")
+          .then(value => this.setState({ totalDays: value }));
       });
-
-      this.toDoItems = this.toDoItems.concat(this.completedItems);
-      this.completedItems = [];
-      localforage.setItem("today", day).then(() =>
-        this.setState(
-          {
-            toDoItems: this.toDoItems,
-            completedItems: this.completedItems
-          },
-          () => this.progressUpdate()
-        )
-      );
-    }
   }
 
   toDoItems = [];
@@ -132,9 +132,9 @@ class App extends Component {
   };
 
   addTaskBackToList = item => {
-    this.toDoItems.push(item);
-    let newArray = this.toDoItems.filter(task => task !== item);
+    let newArray = this.completedItems.filter(task => task !== item);
     this.completedItems = newArray;
+    this.toDoItems = [...this.toDoItems, item];
     this.updateArrays();
   };
 
@@ -175,7 +175,10 @@ class App extends Component {
           addTaskBackToList={this.addTaskBackToList}
         />
 
-        <div className="tracker">{this.state.totalDays} Day(s) Used</div>
+        <div className="tracker">
+          {this.state.totalDays} Day{this.state.totalDays > 1 && <span>s</span>}{" "}
+          Of Completing Tasks
+        </div>
       </div>
     );
   }

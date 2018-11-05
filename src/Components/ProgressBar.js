@@ -4,7 +4,7 @@ import { Progress } from "reactstrap";
 
 const ProgressBar = ({ percentDone }) => {
   return (
-    <div>
+    <div style={{ marginTop: "20px" }}>
       <div className="text-center">
         {percentDone + "%"}
         {percentDone === "100" && (

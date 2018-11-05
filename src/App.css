@@ -15,6 +15,14 @@
 
 .inputField {
   width: 40%;
+  transition: all 0.2s ease;
+  font-size: 16px;
+  padding-left: 10px;
+}
+
+.inputField:focus {
+  background-color: DimGray;
+  color: white;
 }
 
 .submitForm {
