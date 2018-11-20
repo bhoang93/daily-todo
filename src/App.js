@@ -138,6 +138,13 @@ class App extends Component {
     this.updateArrays();
   };
 
+  resetTasks = () => {
+    let newArray = [...this.completedItems, ...this.toDoItems];
+    this.toDoItems = newArray;
+    this.completedItems = [];
+    this.updateArrays();
+  };
+
   render() {
     return (
       <div className="App">
@@ -174,6 +181,10 @@ class App extends Component {
           completedItems={this.state.completedItems}
           addTaskBackToList={this.addTaskBackToList}
         />
+
+        <Button color="danger" onClick={this.resetTasks}>
+          Reset
+        </Button>
 
         <div className="tracker">
           {this.state.totalDays} Day{this.state.totalDays > 1 && <span>s</span>}{" "}
